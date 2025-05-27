@@ -6,7 +6,7 @@ export const PreserveClasses = Extension.create({
   addGlobalAttributes() {
     return [
       {
-        types: ['paragraph'],
+        types: ['paragraph', 'orderedList'],
         attributes: {
           class: {
             default: null,

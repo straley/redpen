@@ -363,43 +363,68 @@ function processListNumberingTypes(html: string): string {
   const parser = new DOMParser();
   const doc = parser.parseFromString(html, 'text/html');
   
-  // Find all ordered lists
-  const orderedLists = doc.querySelectorAll('ol');
-  orderedLists.forEach((ol) => {
-    const firstItem = ol.querySelector('li');
-    if (firstItem) {
-      const text = firstItem.textContent || '';
-      
-      // Check if the list items start with letters (A., B., etc.)
-      if (text.match(/^[A-Z]\./)) {
-        ol.setAttribute('type', 'A');
-        console.log('Applied uppercase letter numbering to list');
-      }
-      // Check for lowercase letters (a., b., etc.)
-      else if (text.match(/^[a-z]\./)) {
-        ol.setAttribute('type', 'a');
-        console.log('Applied lowercase letter numbering to list');
-      }
-      // Check for Roman numerals (I., II., III., etc.)
-      else if (text.match(/^[IVX]+\./)) {
-        ol.setAttribute('type', 'I');
-        console.log('Applied uppercase Roman numeral numbering to list');
-      }
-      // Check for lowercase Roman numerals (i., ii., iii., etc.)
-      else if (text.match(/^[ivx]+\./)) {
-        ol.setAttribute('type', 'i');
-        console.log('Applied lowercase Roman numeral numbering to list');
-      }
-      // Default is already numeric (1., 2., etc.)
-    }
-    
-    // Clean up the list items to remove the manual numbering if present
-    ol.querySelectorAll('li').forEach((li) => {
-      const liText = li.textContent || '';
-      // Remove manual numbering patterns at the start
-      li.innerHTML = li.innerHTML.replace(/^([A-Za-z]+|\d+|[IVXivx]+)\.\s*/, '');
+  // Process all ordered lists based on their nesting level
+  const processListHierarchy = (element: Element, level: number = 0) => {
+    // Process direct child lists
+    element.querySelectorAll(':scope > li').forEach((li) => {
+      // Find direct child ol elements within this li
+      const childLists = li.querySelectorAll(':scope > ol');
+      childLists.forEach((childList) => {
+        // Apply type based on nesting level
+        if (level === 0) {
+          // First level nested list should use uppercase letters
+          childList.setAttribute('type', 'A');
+          childList.classList.add('uppercase-alpha-list');
+          console.log('Applied type="A" and uppercase-alpha-list class to level 1 nested list');
+          console.log('List HTML after setting type:', childList.outerHTML.substring(0, 100));
+        } else if (level === 1) {
+          // Second level nested list should use parentheses numbering
+          childList.classList.add('parentheses-numbering');
+          console.log('Applied parentheses numbering to level 2 nested list');
+        }
+        // Recursively process deeper levels
+        processListHierarchy(childList, level + 1);
+      });
     });
+  };
+  
+  // Find all top-level ordered lists
+  const topLevelLists = doc.querySelectorAll('body > ol, p > ol, div > ol, td > ol');
+  console.log(`Found ${topLevelLists.length} top-level lists`);
+  
+  topLevelLists.forEach((ol, index) => {
+    console.log(`Processing top-level list ${index}`);
+    
+    // Debug: show structure
+    const listItems = ol.querySelectorAll(':scope > li');
+    console.log(`  - Has ${listItems.length} direct children`);
+    
+    listItems.forEach((li, liIndex) => {
+      const nestedLists = li.querySelectorAll(':scope > ol');
+      if (nestedLists.length > 0) {
+        console.log(`  - Item ${liIndex} has ${nestedLists.length} nested list(s)`);
+      }
+    });
+    
+    // The top level list is numeric by default (type="1")
+    processListHierarchy(ol, 0);
   });
+  
+  // Also look for inline parentheses patterns in text that might need special handling
+  const processInlineNumbering = () => {
+    doc.querySelectorAll('p, li').forEach(elem => {
+      if (elem.innerHTML.includes('(1)') || elem.innerHTML.includes('(2)')) {
+        // Check if this is within a list context
+        const parentLi = elem.closest('li');
+        if (parentLi && elem.innerHTML.match(/\(\d+\)[^<]*\(\d+\)/)) {
+          // Multiple inline numbers - might need to be converted to a list
+          console.log('Found inline numbering pattern that might need conversion');
+        }
+      }
+    });
+  };
+  
+  processInlineNumbering();
   
   // Convert back to HTML string
   html = doc.body.innerHTML;

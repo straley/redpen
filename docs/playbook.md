@@ -133,3 +133,4 @@ claude
 - 9:06 AM - switched to mammoth and PizZip for documents. docxtemplater would lose formating on import.
 - 9:10 AM - resolving difficulties with newlines and paragraphs
 - 9:15 AM - working on tabs, indents, numbered lists, bulleting
+- 10:00 AM - formatting working 80% of where I'd like it, but switching to AI interface

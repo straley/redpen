@@ -2,6 +2,7 @@
 
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+import OrderedList from '@tiptap/extension-ordered-list';
 import Underline from '@tiptap/extension-underline';
 import TextStyle from '@tiptap/extension-text-style';
 import Color from '@tiptap/extension-color';
@@ -44,6 +45,47 @@ export default function Editor({ content, onContentChange }: EditorProps) {
         hardBreak: {
           keepMarks: true,
         },
+        orderedList: false, // Disable to use custom config
+      }),
+      OrderedList.configure({
+        HTMLAttributes: {
+          class: null,
+        },
+        keepMarks: true,
+        keepAttributes: true,
+      }).extend({
+        addAttributes() {
+          return {
+            ...this.parent?.(),
+            type: {
+              default: '1',
+              parseHTML: element => element.getAttribute('type') || '1',
+              renderHTML: attributes => {
+                if (!attributes.type) {
+                  return {};
+                }
+                return {
+                  type: attributes.type,
+                };
+              },
+            },
+            start: {
+              default: 1,
+              parseHTML: element => {
+                const start = element.getAttribute('start');
+                return start ? parseInt(start, 10) : 1;
+              },
+              renderHTML: attributes => {
+                if (attributes.start && attributes.start !== 1) {
+                  return {
+                    start: attributes.start,
+                  };
+                }
+                return {};
+              },
+            },
+          };
+        },
       }),
       Underline,
       TextStyle,
@@ -84,6 +126,15 @@ export default function Editor({ content, onContentChange }: EditorProps) {
       
       console.log('5. Editor HTML after setContent:');
       console.log(editor.getHTML());
+      
+      // Debug: Check if type attributes are preserved
+      const editorDom = new DOMParser().parseFromString(editor.getHTML(), 'text/html');
+      const typedLists = editorDom.querySelectorAll('ol[type]');
+      console.log(`6. Lists with type attribute: ${typedLists.length}`);
+      typedLists.forEach((ol, i) => {
+        console.log(`   List ${i}: type="${ol.getAttribute('type')}"`);
+      });
+      
       console.log('=== END EDITOR UPDATE ===');
     }
   }, [content, editor]);
