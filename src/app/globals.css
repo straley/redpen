@@ -24,3 +24,184 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Override TipTap prose styles for better contrast and spacing */
+.prose {
+  color: #1f2937;
+}
+
+.prose p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.prose p:first-child {
+  margin-top: 0;
+}
+
+.prose p:last-child {
+  margin-bottom: 0;
+}
+
+/* Empty paragraphs for spacing */
+.prose p:empty::before {
+  content: '\00a0';
+}
+
+.prose br {
+  display: block;
+  margin: 0;
+  content: '';
+}
+
+/* Indented paragraphs */
+.prose p.indented {
+  margin-left: 2em;
+}
+
+/* List styling */
+.prose ul,
+.prose ol {
+  margin: 0.5em 0;
+  padding-left: 2em;
+}
+
+.prose li {
+  margin: 0.25em 0;
+}
+
+/* Handle numbered list items in paragraphs */
+.prose p[data-list-item] {
+  margin-left: 1.5em;
+  text-indent: -1.5em;
+}
+
+/* Style for paragraphs that start with numbers in parentheses */
+.prose p.numbered-item {
+  margin-left: 2em;
+  text-indent: -1em;
+}
+
+/* Style for paragraphs that start with bullets */
+.prose p.bullet-item {
+  margin-left: 2em;
+  text-indent: -1em;
+}
+
+/* Tab simulation */
+.tab {
+  display: inline-block;
+  width: 2em;
+}
+
+/* Centered text */
+.prose .text-center {
+  text-align: center;
+}
+
+/* Definition paragraphs */
+.prose p.definition {
+  margin-left: 2em;
+}
+
+/* First paragraph indentation */
+.prose p.first-paragraph {
+  text-indent: 2em;
+}
+
+/* Properly style ordered lists with different types */
+.prose ol {
+  counter-reset: list-item;
+  list-style: none;
+  padding-left: 2em;
+}
+
+.prose ol[type="A"] {
+  list-style: none;
+}
+
+.prose ol[type="a"] {
+  list-style: none;
+}
+
+.prose ol[type="i"] {
+  list-style: none;
+}
+
+/* Ensure list items show their numbers/bullets/letters with proper format */
+.prose ol li {
+  counter-increment: list-item;
+  position: relative;
+}
+
+.prose ol li::before {
+  content: counter(list-item) ". ";
+  position: absolute;
+  left: -1.5em;
+}
+
+.prose ol[type="A"] li::before {
+  content: counter(list-item, upper-alpha) ". ";
+}
+
+.prose ol[type="a"] li::before {
+  content: counter(list-item, lower-alpha) ". ";
+}
+
+.prose ol[type="i"] li::before {
+  content: counter(list-item, lower-roman) ". ";
+}
+
+/* Small caps support */
+.prose .small-caps {
+  font-variant: small-caps;
+  text-transform: lowercase;
+}
+
+/* Indented paragraphs */
+.prose p.indent,
+.prose .indent {
+  text-indent: 2em;
+}
+
+/* Reduce spacing between centered headings */
+.prose h1.text-center + br + h2.text-center {
+  margin-top: -0.5em;
+}
+
+.prose strong {
+  color: #111827;
+  font-weight: 600;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+  color: #111827;
+  font-weight: 700;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+}
+
+.prose h1:first-child,
+.prose h2:first-child,
+.prose h3:first-child {
+  margin-top: 0;
+}
+
+/* Redline styles */
+.redline-addition {
+  color: #dc2626;
+  text-decoration: underline;
+  text-decoration-color: #dc2626;
+  text-underline-offset: 2px;
+}
+
+.redline-deletion {
+  color: #dc2626;
+  text-decoration: line-through;
+  text-decoration-color: #dc2626;
+}

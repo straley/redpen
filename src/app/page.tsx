@@ -1,103 +1,136 @@
-import Image from "next/image";
+'use client';
+
+import { useState } from 'react';
+import { FolderOpen, FilePlus, Undo2, Redo2, FileDown } from 'lucide-react';
+import Editor from '@/components/Editor';
+import ChatPane from '@/components/ChatPane';
+import { processDocxFile, saveAsDocx } from '@/lib/docx-handler';
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [documentContent, setDocumentContent] = useState('<p>Start typing or load a document...</p>');
+  const [fileName, setFileName] = useState('Untitled Document');
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  const handleNewDocument = () => {
+    if (hasUnsavedChanges && !confirm('You have unsaved changes. Create a new document anyway?')) {
+      return;
+    }
+    setDocumentContent('<p></p>');
+    setFileName('Untitled Document');
+    setHasUnsavedChanges(false);
+  };
+
+  const handleLoadDocument = async () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.docx';
+    
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        try {
+          const content = await processDocxFile(file);
+          setDocumentContent(content);
+          setFileName(file.name.replace('.docx', ''));
+          setHasUnsavedChanges(false);
+        } catch (error) {
+          alert('Error loading document: ' + error);
+        }
+      }
+    };
+    
+    input.click();
+  };
+
+  const handleSaveAsDocument = async () => {
+    const newName = prompt('Save as:', fileName);
+    if (newName) {
+      setFileName(newName);
+      try {
+        await saveAsDocx(documentContent, newName + '.docx');
+        setHasUnsavedChanges(false);
+      } catch (error) {
+        alert('Error saving document: ' + error);
+      }
+    }
+  };
+
+  const handleContentChange = (content: string) => {
+    setDocumentContent(content);
+    setHasUnsavedChanges(true);
+  };
+
+  return (
+    <div className="h-screen flex flex-col bg-gray-50">
+      {/* Toolbar */}
+      <div className="bg-white border-b border-gray-300 px-4 py-2 shadow-sm">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleNewDocument}
+            className="p-2 hover:bg-gray-200 rounded transition-colors text-gray-700 hover:text-gray-900"
+            title="New Document"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <FilePlus className="w-5 h-5" />
+          </button>
+          <button
+            onClick={handleLoadDocument}
+            className="p-2 hover:bg-gray-200 rounded transition-colors text-gray-700 hover:text-gray-900"
+            title="Open Document"
           >
-            Read our docs
-          </a>
+            <FolderOpen className="w-5 h-5" />
+          </button>
+          <button
+            onClick={handleSaveAsDocument}
+            className="p-2 hover:bg-gray-200 rounded transition-colors text-gray-700 hover:text-gray-900"
+            title="Save As"
+          >
+            <FileDown className="w-5 h-5" />
+          </button>
+          <div className="w-px h-6 bg-gray-400 mx-2" />
+          <button
+            className="p-2 hover:bg-gray-200 rounded transition-colors text-gray-700 hover:text-gray-900"
+            title="Undo"
+            id="undo-btn"
+          >
+            <Undo2 className="w-5 h-5" />
+          </button>
+          <button
+            className="p-2 hover:bg-gray-200 rounded transition-colors text-gray-700 hover:text-gray-900"
+            title="Redo"
+            id="redo-btn"
+          >
+            <Redo2 className="w-5 h-5" />
+          </button>
+          <div className="flex-1 text-center">
+            <span className="text-sm font-medium text-gray-800">
+              {fileName}
+              {hasUnsavedChanges && <span className="text-gray-700 ml-1">•</span>}
+            </span>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Document Pane */}
+        <div className="flex-1 flex flex-col bg-white">
+          <Editor 
+            content={documentContent} 
+            onContentChange={handleContentChange}
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
+        </div>
+
+        {/* Chat Pane */}
+        <div className="w-96 border-l border-gray-300">
+          <ChatPane 
+            documentContent={documentContent}
+            onApplyChanges={(newContent) => {
+              setDocumentContent(newContent);
+              setHasUnsavedChanges(true);
+            }}
           />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        </div>
+      </div>
     </div>
   );
 }

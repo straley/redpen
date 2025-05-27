@@ -9,19 +9,43 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@tiptap/extension-bold": "^2.12.0",
+    "@tiptap/extension-bullet-list": "^2.12.0",
+    "@tiptap/extension-color": "^2.12.0",
+    "@tiptap/extension-document": "^2.12.0",
+    "@tiptap/extension-heading": "^2.12.0",
+    "@tiptap/extension-highlight": "^2.12.0",
+    "@tiptap/extension-history": "^2.12.0",
+    "@tiptap/extension-italic": "^2.12.0",
+    "@tiptap/extension-list-item": "^2.12.0",
+    "@tiptap/extension-ordered-list": "^2.12.0",
+    "@tiptap/extension-paragraph": "^2.12.0",
+    "@tiptap/extension-strike": "^2.12.0",
+    "@tiptap/extension-task-item": "^2.12.0",
+    "@tiptap/extension-task-list": "^2.12.0",
+    "@tiptap/extension-text": "^2.12.0",
+    "@tiptap/extension-text-style": "^2.12.0",
+    "@tiptap/extension-underline": "^2.12.0",
+    "@tiptap/react": "^2.12.0",
+    "@tiptap/starter-kit": "^2.12.0",
+    "file-saver": "^2.0.5",
+    "lucide-react": "^0.511.0",
+    "mammoth": "^1.9.0",
+    "next": "15.3.2",
+    "pizzip": "^3.2.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "next": "15.3.2"
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/file-saver": "^2.0.7",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
     "eslint": "^9",
     "eslint-config-next": "15.3.2",
-    "@eslint/eslintrc": "^3"
+    "tailwindcss": "^4",
+    "typescript": "^5"
   }
 }
