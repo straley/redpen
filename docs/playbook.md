@@ -127,10 +127,34 @@ claude
 
 ## Timeline
 
-- 8:30 AM - initialized NextJS application
-- 8:37 AM - ran initial Claude Code prompt to complete scaffolding, reviewed changes, tested
-- 8:56 AM - Claude Code completed, began revising code
-- 9:06 AM - switched to mammoth and PizZip for documents. docxtemplater would lose formating on import.
-- 9:10 AM - resolving difficulties with newlines and paragraphs
-- 9:15 AM - working on tabs, indents, numbered lists, bulleting
-- 10:00 AM - formatting working 80% of where I'd like it, but switching to AI interface
+- 9:00 AM - initialized NextJS application
+- 9:07 AM - ran initial Claude Code prompt to complete scaffolding, reviewed changes, tested
+- 0:26 AM - Claude Code completed, began revising code
+- 9:36 AM - switched to mammoth and PizZip for documents. docxtemplater would lose formating on import.
+- 9:40 AM - resolving difficulties with newlines and paragraphs
+- 9:45 AM - working on tabs, indents, numbered lists, bulleting
+- 9:52 AM - interrupt from work (cumulative work effort: 52 mins)
+
+- 10:25 AM - formatting working 80% of where I'd like it, but switching to AI interface
+- 10:47 AN - unreliable performance, switching to claude sonnet 4
+- 10:53 AM - fixing bad return formatting
+- 11:58 AM - clean up, linting, etc.
+- 11:00 AM - interrupt from work (cumulative work effort: 1 hour 27 mins)
+
+- 12:16 PM - testing.... sonnet is returning timeout errors. :(
+- 12:28 PM - interrupt from work (cumulative work effort: 1 hours 35 mins)
+
+- 2:05 PM - switching to openai 
+- 2:23 PM - switching to streaming... yay! no timeouts! 
+- 2:28 PM - cleanup, linting, etc.
+- 2:34 PM - complete (2 hours 6 minutes)
+
+
+## Next Steps
+- Have the AI just return the diff and let the client parse that (less tokens, faster)
+- Use streaming from OpenAI to show progress indication 
+- Better prompting to prevent awkward responses
+- Better JSON detection and removal
+- Error handling
+- Authentication
+- Separate API to its own service 

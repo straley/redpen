@@ -32,9 +32,16 @@ declare module 'mammoth' {
     styleId?: string;
     styleName?: string;
     alignment?: string;
-    indent?: any;
+    indent?: unknown;
     smallCaps?: boolean;
-    [key: string]: any;
+    justification?: string;
+    align?: string;
+    caps?: boolean;
+    allCaps?: boolean;
+    font?: string;
+    bold?: boolean;
+    italic?: boolean;
+    value?: string;
   }
 
   export interface ConvertOptionsWithTransform extends ConvertOptions {

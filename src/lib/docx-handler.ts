@@ -6,62 +6,14 @@ export async function processDocxFile(file: File): Promise<string> {
   try {
     const arrayBuffer = await file.arrayBuffer();
     
-    console.log('Starting DOCX processing...');
+    
     
     // First, let's examine the raw DOCX structure
-    try {
-      const zip = new PizZip(arrayBuffer);
-      const documentXml = zip.files['word/document.xml']?.asText();
-      const numberingXml = zip.files['word/numbering.xml']?.asText();
-      
-      if (documentXml) {
-        // Look for centered paragraphs in the raw XML
-        const centeredMatches = documentXml.match(/<w:jc w:val="center"\/>/g);
-        console.log('Found centered paragraphs in raw DOCX:', centeredMatches?.length || 0);
-        
-        // Look for small caps
-        const smallCapsMatches = documentXml.match(/<w:smallCaps\/>/g);
-        console.log('Found small caps in raw DOCX:', smallCapsMatches?.length || 0);
-        
-        // Show a sample of the document structure
-        const firstParagraph = documentXml.match(/<w:p[^>]*>[\s\S]*?<\/w:p>/);
-        if (firstParagraph) {
-          console.log('First paragraph XML:', firstParagraph[0].substring(0, 500));
-        }
-      }
-      
-      if (numberingXml) {
-        console.log('=== NUMBERING.XML ANALYSIS ===');
-        // Look for number formats
-        const numFmtMatches = numberingXml.match(/<w:numFmt w:val="([^"]+)"\/>/g);
-        console.log('Found number formats:', numFmtMatches);
-        
-        // Look for abstract numbering definitions
-        const abstractNumMatches = numberingXml.match(/<w:abstractNum[^>]*>/g);
-        console.log('Found abstract numbering definitions:', abstractNumMatches?.length || 0);
-        
-        // Extract detailed numbering info
-        const abstractNums = numberingXml.match(/<w:abstractNum[^>]*>[\s\S]*?<\/w:abstractNum>/g);
-        if (abstractNums) {
-          abstractNums.forEach((abstractNum, index) => {
-            const numId = abstractNum.match(/w:abstractNumId="(\d+)"/)?.[1];
-            const levels = abstractNum.match(/<w:lvl[^>]*>[\s\S]*?<\/w:lvl>/g);
-            if (levels) {
-              console.log(`\nAbstract Num ${numId}:`);
-              levels.forEach((level) => {
-                const lvlNum = level.match(/w:ilvl="(\d+)"/)?.[1];
-                const numFmt = level.match(/<w:numFmt w:val="([^"]+)"\/>/)?.[1];
-                const lvlText = level.match(/<w:lvlText w:val="([^"]+)"\/>/)?.[1];
-                console.log(`  Level ${lvlNum}: format=${numFmt}, text="${lvlText}"`);
-              });
-            }
-          });
-        }
-        console.log('=== END NUMBERING.XML ===');
-      }
-    } catch (err) {
-      console.log('Could not inspect raw DOCX:', err);
-    }
+    // try {
+    //   const zip = new PizZip(arrayBuffer);
+    // } catch (err) {
+    //   console.error(err)
+    // }
     
     // Use mammoth to convert DOCX to HTML with formatting preserved
     const result = await mammoth.convertToHtml(
@@ -121,15 +73,15 @@ export async function processDocxFile(file: File): Promise<string> {
       }
     );
     
-    if (result.messages.length > 0) {
-      console.warn('Conversion messages:', result.messages);
-    }
+    // if (result.messages.length > 0) {
+    //   console.warn('Conversion messages:', result.messages);
+    // }
     
     let html = result.value;
     
-    console.log('=== MAMMOTH RAW OUTPUT ===');
-    console.log(html);
-    console.log('=== END RAW OUTPUT ===');
+    
+    
+    
     
     // Post-process to handle any remaining issues
     html = postProcessHtml(html);
@@ -144,18 +96,18 @@ export async function processDocxFile(file: File): Promise<string> {
 function transformDocument(element: TransformElement): TransformElement {
   // More detailed logging
   if (element.type === 'paragraph') {
-    console.log('=== PARAGRAPH ===');
-    console.log('Full element:', JSON.stringify(element, null, 2));
+    
+    
     
     // Check all possible alignment properties
     const alignment = element.alignment || element.justification || element.align;
     if (alignment) {
-      console.log('Found alignment:', alignment);
+      
     }
     
     // Check for centered text
     if (alignment === 'center' || alignment === 'centered') {
-      console.log('CENTERED PARAGRAPH DETECTED');
+      
       return {
         ...element,
         styleId: 'centered-paragraph',
@@ -166,20 +118,10 @@ function transformDocument(element: TransformElement): TransformElement {
   
   // Check for runs (text segments)
   if (element.type === 'run') {
-    console.log('=== RUN ===');
-    console.log('Run properties:', {
-      smallCaps: element.smallCaps,
-      caps: element.caps,
-      allCaps: element.allCaps,
-      font: element.font,
-      bold: element.bold,
-      italic: element.italic,
-      text: element.value?.substring(0, 50) + '...'
-    });
     
     // Check various forms of caps
     if (element.smallCaps || element.caps || element.allCaps) {
-      console.log('SMALL CAPS DETECTED');
+      
       return {
         ...element,
         styleId: 'small-caps'
@@ -191,7 +133,7 @@ function transformDocument(element: TransformElement): TransformElement {
 }
 
 function postProcessHtml(html: string): string {
-  console.log('=== POST PROCESSING ===');
+  
   
   // Fix common issues
   let processed = html;
@@ -202,10 +144,9 @@ function postProcessHtml(html: string): string {
   // Look for patterns that need special handling
   // Check if we still have the single paragraph problem
   const paragraphs = processed.match(/<p[^>]*>[\s\S]*?<\/p>/g) || [];
-  console.log(`Found ${paragraphs.length} paragraphs after mammoth conversion`);
   
   if (paragraphs.length === 1 && processed.length > 1000) {
-    console.log('WARNING: Still have single paragraph issue');
+    
     processed = handleSingleParagraphDocument(processed);
   }
   
@@ -215,12 +156,12 @@ function postProcessHtml(html: string): string {
   // Process lists to detect and apply proper numbering types
   processed = processListNumberingTypes(processed);
   
-  console.log('=== END POST PROCESSING ===');
+  
   return processed;
 }
 
 function handleSingleParagraphDocument(html: string): string {
-  console.log('Attempting to fix single paragraph document...');
+  
   
   // Extract content
   const match = html.match(/<p[^>]*>([\s\S]*)<\/p>/);
@@ -253,7 +194,7 @@ function handleSingleParagraphDocument(html: string): string {
       
       // If more than 60% of words are uppercase, it's likely small caps
       if (ratio > 0.6 && words.length > 5) {
-        console.log('Detected small caps section:', match.substring(0, 50) + '...');
+        
         return `<span class="small-caps">${match}</span>`;
       }
       return match;
@@ -297,7 +238,7 @@ function handleSingleParagraphDocument(html: string): string {
 }
 
 function applyFormattingClasses(html: string): string {
-  console.log('=== APPLYING FORMATTING CLASSES ===');
+  
   
   // Process the HTML to detect patterns
   const parser = new DOMParser();
@@ -311,14 +252,13 @@ function applyFormattingClasses(html: string): string {
     
     // First two paragraphs that are short and bold are likely titles
     if (index < 2 && hasOnlyStrong && text.length < 100) {
-      console.log(`Applying centering to paragraph ${index}: ${text}`);
       p.classList.add('text-center');
     }
     
     // Check for company/agreement pattern
     if (text.includes('ABCCorp') || text.includes('Agreement')) {
       if (hasOnlyStrong) {
-        console.log('Found title paragraph:', text);
+        
         p.classList.add('text-center');
       }
     }
@@ -332,7 +272,6 @@ function applyFormattingClasses(html: string): string {
     // The "By accepting..." paragraph is typically small caps
     if (text.startsWith('By accepting') || 
         (text === text.toUpperCase() && text.length > 100 && index < 10)) {
-      console.log(`Found potential small caps paragraph ${index}:`, text.substring(0, 50) + '...');
       const span = doc.createElement('span');
       span.className = 'small-caps';
       span.innerHTML = p.innerHTML;
@@ -353,12 +292,12 @@ function applyFormattingClasses(html: string): string {
   html = html.replace(/(<ol[^>]*>)\s*<p>/g, '$1<li>');
   html = html.replace(/<\/p>\s*(<\/ol>)/g, '</li>$1');
   
-  console.log('=== END FORMATTING CLASSES ===');
+  
   return html;
 }
 
 function processListNumberingTypes(html: string): string {
-  console.log('=== PROCESSING LIST NUMBERING TYPES ===');
+  
   
   const parser = new DOMParser();
   const doc = parser.parseFromString(html, 'text/html');
@@ -375,12 +314,12 @@ function processListNumberingTypes(html: string): string {
           // First level nested list should use uppercase letters
           childList.setAttribute('type', 'A');
           childList.classList.add('uppercase-alpha-list');
-          console.log('Applied type="A" and uppercase-alpha-list class to level 1 nested list');
-          console.log('List HTML after setting type:', childList.outerHTML.substring(0, 100));
+          
+          
         } else if (level === 1) {
           // Second level nested list should use parentheses numbering
           childList.classList.add('parentheses-numbering');
-          console.log('Applied parentheses numbering to level 2 nested list');
+          
         }
         // Recursively process deeper levels
         processListHierarchy(childList, level + 1);
@@ -390,23 +329,8 @@ function processListNumberingTypes(html: string): string {
   
   // Find all top-level ordered lists
   const topLevelLists = doc.querySelectorAll('body > ol, p > ol, div > ol, td > ol');
-  console.log(`Found ${topLevelLists.length} top-level lists`);
   
-  topLevelLists.forEach((ol, index) => {
-    console.log(`Processing top-level list ${index}`);
-    
-    // Debug: show structure
-    const listItems = ol.querySelectorAll(':scope > li');
-    console.log(`  - Has ${listItems.length} direct children`);
-    
-    listItems.forEach((li, liIndex) => {
-      const nestedLists = li.querySelectorAll(':scope > ol');
-      if (nestedLists.length > 0) {
-        console.log(`  - Item ${liIndex} has ${nestedLists.length} nested list(s)`);
-      }
-    });
-    
-    // The top level list is numeric by default (type="1")
+  topLevelLists.forEach((ol) => {
     processListHierarchy(ol, 0);
   });
   
@@ -418,7 +342,7 @@ function processListNumberingTypes(html: string): string {
         const parentLi = elem.closest('li');
         if (parentLi && elem.innerHTML.match(/\(\d+\)[^<]*\(\d+\)/)) {
           // Multiple inline numbers - might need to be converted to a list
-          console.log('Found inline numbering pattern that might need conversion');
+          
         }
       }
     });
@@ -429,7 +353,7 @@ function processListNumberingTypes(html: string): string {
   // Convert back to HTML string
   html = doc.body.innerHTML;
   
-  console.log('=== END LIST NUMBERING TYPES ===');
+  
   return html;
 }
 

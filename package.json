@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.52.0",
     "@tiptap/extension-bold": "^2.12.0",
     "@tiptap/extension-bullet-list": "^2.12.0",
     "@tiptap/extension-color": "^2.12.0",
@@ -32,9 +33,11 @@
     "lucide-react": "^0.511.0",
     "mammoth": "^1.9.0",
     "next": "15.3.2",
+    "openai": "^4.103.0",
     "pizzip": "^3.2.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-markdown": "^10.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

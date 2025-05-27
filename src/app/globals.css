@@ -206,3 +206,54 @@ body {
   text-decoration: line-through;
   text-decoration-color: #dc2626;
 }
+
+/* Chat markdown styles */
+.prose.prose-sm {
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.prose.prose-sm p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.prose.prose-sm p:first-child {
+  margin-top: 0;
+}
+
+.prose.prose-sm p:last-child {
+  margin-bottom: 0;
+}
+
+.prose.prose-sm ul,
+.prose.prose-sm ol {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  padding-left: 1.5em;
+}
+
+.prose.prose-sm li {
+  margin-top: 0.25em;
+  margin-bottom: 0.25em;
+}
+
+.prose.prose-sm strong {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.prose.prose-sm h1,
+.prose.prose-sm h2,
+.prose.prose-sm h3 {
+  font-weight: 700;
+  color: #111827;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+}
+
+.prose.prose-sm h1:first-child,
+.prose.prose-sm h2:first-child,
+.prose.prose-sm h3:first-child {
+  margin-top: 0;
+}

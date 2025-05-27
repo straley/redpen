@@ -112,30 +112,9 @@ export default function Editor({ content, onContentChange }: EditorProps) {
 
   useEffect(() => {
     if (editor && content !== editor.getHTML()) {
-      console.log('=== EDITOR CONTENT UPDATE ===');
-      console.log('1. Incoming content:');
-      console.log(content);
-      console.log('2. Current editor HTML:');
-      console.log(editor.getHTML());
-      console.log('3. Content length:', content.length);
-      console.log('4. Setting new content...');
-      
       editor.commands.setContent(content, false, {
         preserveWhitespace: true,
       });
-      
-      console.log('5. Editor HTML after setContent:');
-      console.log(editor.getHTML());
-      
-      // Debug: Check if type attributes are preserved
-      const editorDom = new DOMParser().parseFromString(editor.getHTML(), 'text/html');
-      const typedLists = editorDom.querySelectorAll('ol[type]');
-      console.log(`6. Lists with type attribute: ${typedLists.length}`);
-      typedLists.forEach((ol, i) => {
-        console.log(`   List ${i}: type="${ol.getAttribute('type')}"`);
-      });
-      
-      console.log('=== END EDITOR UPDATE ===');
     }
   }, [content, editor]);
 
